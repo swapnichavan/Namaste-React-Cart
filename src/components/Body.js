@@ -1,37 +1,53 @@
-import React from "react"
-import { Star } from "react-feather"
-import {restaurantList,Url} from '../Contants'
+import React, { useState } from "react"
+import RestaurantCard from "./RestaurantCard"
+import {restaurantList} from '../Contants'
+
+const filterData=(searchText,restaurants)=>{
+    // console.log(searchText,restaurants)
+    return restaurants.filter((restaurant)=>{
+        console.log(restaurant.data.name)
+        return restaurant.data.name.toUpperCase().includes(searchText.toUpperCase())
+    })
+}
 
 // Body Component for body section: It contain all restaurant cards
 // We are mapping restaurantList array and passing data to RestaurantCard component as props with unique key as index
 
 const Body=()=>{
+
+    const [searchText,setSearchText]=useState("")
+    const [restaurants,setRestaurants]=useState(restaurantList)
+
     console.log(restaurantList)
     return(
+        <>
+        <div className="search-container">
+            <input type="text"
+            className="search-input"
+            placeholder="Search a restaurant you want..."
+            value={searchText}
+            onChange={(e)=>setSearchText(e.target.value)}
+            />
+            <button className="search-btn"
+            onClick={()=>{
+                //filter data
+                let data=filterData(searchText,restaurants)
+                setRestaurants(data)
+                setSearchText("")
+            }}
+            >
+            Search
+            </button>
+        </div>
       <div className='restaurant-list'>
-        {restaurantList.map((restaurant)=>(
-          <RestaurantCard key={restaurant.data.id} {...restaurant.data}/>
-        ))}
+        {restaurants.map((restaurant)=>(
+            <RestaurantCard key={restaurant.data.id} {...restaurant.data}/>
+            ))}
       </div>
+        </>
     )
   }
   
-  // Restaurant card component: Image, name, cuisine
-  const RestaurantCard=({cloudinaryImageId,name,cuisines,area,lastMileTravelString,costForTwoString,avgRating})=>{
-    // console.log(area)
-    return(
-      <div className='card'>
-        <img src={Url+cloudinaryImageId}/>
-        <h2>{name}</h2>
-        <h4>{cuisines.join(", ")}</h4>
-        <h4>{area}</h4>
-        <span>
-          <h4><Star className='star'/>{avgRating}</h4>
-          <h4>{lastMileTravelString}</h4>
-          <h4>{costForTwoString}</h4>
-        </span>
-      </div>
-    )
-  }
+  
 
   export default Body
